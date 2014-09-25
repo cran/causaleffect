@@ -1,0 +1,14 @@
+Package: causaleffect
+Version: 1.0
+Date: 2014-09-17
+Title: Deriving Expressions of Joint Interventional Distributions in
+        Causal Models
+Author: Santtu Tikka
+Maintainer: Santtu Tikka <santtuth@gmail.com>
+Imports: igraph, XML
+Description: An implementation of the complete identification algorithm constructed by Ilya Shpitser and Judea Pearl (2006) for deriving expressions of joint interventional distributions in causal models, which contain unobserved variables and induce directed acyclic graphs.
+License: GPL-2
+Packaged: 2014-09-25 16:37:49 UTC; Santtu
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2014-09-25 22:42:50
