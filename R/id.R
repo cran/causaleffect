@@ -59,29 +59,29 @@ function(y, x, P, G, to) {
       if (length(s) > 1) {
         productlist <- list()
         for (i in 1:length(s)) { 
-          if(P$recursive) productlist[[i]] <- parse.joint(P, s[i], v[0:(ind[i]-1)], v)
-          else {
+          if (P$recursive) {
+            productlist[[i]] <- parse.joint(P, s[i], v[0:(ind[i]-1)], v)
+          } else {
             P.prod <- P
             P.prod$var <- s[i]
             P.prod$cond <- v[0:(ind[i]-1)]
-            productlist[[i]] <- P.prod
+            productlist[[i]] <- P.prod           
           }
-        }
+        }  
         return(probability(sumset = setdiff(s, y), recursive = TRUE, children = productlist))
       } else {
         if (P$recursive) {
           P.prod <- parse.joint(P, s[1], v[0:(ind[1]-1)], v)
           P.prod$sumset <- union(P.prod$sumset, setdiff(s, y))
           return(P.prod)
-        }
-        else {
+        } else {
           P.prod <- P
           P.prod$var <- s[1]
           P.prod$cond <- v[0:(ind[1]-1)]
           P.prod$sumset <- union(P.prod$sumset, setdiff(s, y))
-          return(P.prod) 
+          return(P.prod)         
         }
-      }    
+      }
     }
     
     # line 7
