@@ -1,14 +1,14 @@
 Package: causaleffect
-Version: 1.1
-Date: 2015-04-21
+Version: 1.1.1
+Date: 2015-04-28
 Title: Deriving Expressions of Joint Interventional Distributions in
         Causal Models
 Author: Santtu Tikka
 Maintainer: Santtu Tikka <santtuth@gmail.com>
-Imports: igraph, ggm, XML
+Imports: ggm, igraph, XML
 Description: An implementation of a conditional causal effect identification algorithm constructed by Ilya Shpitser and Judea Pearl (2006) for deriving expressions of joint interventional distributions in causal models, which contain unobserved variables and induce directed acyclic graphs.
 License: GPL-2
 NeedsCompilation: no
-Packaged: 2015-04-21 15:56:44 UTC; Santtu
+Packaged: 2015-04-28 13:43:25 UTC; Santtu
 Repository: CRAN
-Date/Publication: 2015-04-21 23:51:35
+Date/Publication: 2015-04-28 20:07:34

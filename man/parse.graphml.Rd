@@ -2,7 +2,7 @@
 \alias{parse.graphml}
 \title{Prepare graphml files for internal use}
 \description{
-This function reads graphml files created by the yEd graph editor, which describe directed acyclic graphs. The R-package XML is utilized to parse the contents of the files to suit the internal format used by \code{causal.effect}. Bidirected arcs are replaced by two unobserved unidirected arcs, and the resulting XML file is coerced into an igraph object. This function
+This function reads graphml files created by a graphical editor, which describe directed acyclic graphs. The R package XML is utilized to parse the contents of the files to suit the internal format used by \code{causal.effect}. Bidirected arcs are replaced by two unobserved unidirected arcs, and the resulting XML file is coerced into an igraph object. This function
 also serves as a wrapper for files that already correspond to the internal format. Names for the nodes of the
 graph can be supplied or read directly from the input file.
 }

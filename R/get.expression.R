@@ -1,4 +1,4 @@
-getExpression.probability <-
+get.expression <- 
 function(x) {
   P <- ""
   s.print <- length(x$sumset) > 0
@@ -10,7 +10,7 @@ function(x) {
     P <- paste(P, "\\sum_{", sum.string, "}[", sep = "", collapse = "")
   }
   if (x$recursive) {
-    for (i in 1:length(x$children)) P <- paste(P, getExpression(x$children[[i]]), sep = "", collapse = ",")
+    for (i in 1:length(x$children)) P <- paste(P, get.expression(x$children[[i]]), sep = "", collapse = ",")
   } else {
     var.string <- paste(tolower(x$var), sep = "", collapse = ",")
     P <- paste(P, "P(", var.string, sep = "", collapse = "")
@@ -23,7 +23,7 @@ function(x) {
   if (s.print) P <- paste(P, "]", sep = "", collapse = ",")
   if (x$fraction) { 
     P <- paste0(P, "}{")
-    P <- paste(P, getExpression(x$divisor), sep = "", collapse = ",")
+    P <- paste(P, get.expression(x$divisor), sep = "", collapse = ",")
     P <- paste0(P, "}")
   }
   return(P)

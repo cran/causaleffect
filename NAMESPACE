@@ -1,2 +1,2 @@
-export(causal.effect, parse.graphml)
-import(igraph, ggm, XML)
+export(causal.effect, get.expression, parse.graphml)
+import(ggm, igraph, XML)

@@ -1,5 +1,5 @@
-causal.effect <-
-function(y, x, z = NULL, G) {
+causal.effect <- 
+function(y, x, z = NULL, G, expr = TRUE) {
   if (!is.dag(observed.graph(G))) stop("Graph 'G' is not a DAG")
   to <- topological.sort(observed.graph(G))
   to <- get.vertex.attribute(G, "name")[to]
@@ -11,14 +11,14 @@ function(y, x, z = NULL, G) {
   if(length(z) == 0) { 
     res <- id(y, x, probability(), G, to)
     res <- organizeTerms(res)
-    res <- getExpression(res)
-    return(res)
-  } else {
+  } else { 
     res <- idc(y, x, z, probability(), G, to)
-    res1 <- organizeTerms(res)
-    res2 <- res1
+    res <- organizeTerms(res)
+    res2 <- res
     res2$sumset <- union(res2$sumset, y)
-    res <- paste0("\\frac{", getExpression(res1), "}{", getExpression(res2), "}")
-    return(res)
+    res$fraction <- TRUE
+    res$divisor <- res2
   }
+  if(expr) res <- get.expression(res)
+  return(res)
 }

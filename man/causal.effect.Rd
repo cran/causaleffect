@@ -5,15 +5,16 @@
 given the intervention on the set of variables x conditional on z, if the effect is identifiable. Otherwise
 an error is thrown describing the graphical structure that witnesses unidentifiability. }
 
-\usage{causal.effect(y, x, z = NULL, G)}
+\usage{causal.effect(y, x, z = NULL, G, expr = TRUE)}
 
 \arguments{
   \item{y}{A character vector of variables of interest given the intervention.}
   \item{x}{A character vector of the variables that are acted upon.}
   \item{z}{A character vector of the conditioning variables.}
   \item{G}{An \code{igraph} object describing the directed acyclic graph induced by the causal model that matches the internal syntax. }
+  \item{expr}{A logical value. If \code{TRUE}, a string is returned describing the expression in LaTeX syntax. Else, a list structure is returned which can be manually parsed by the function \code{get.expression}}
 }
-\value{A character string that describes the interventional distribution in LaTeX syntax.}
+\value{A character string or an object of class \code{probability} that describes the interventional distribution.}
 \references{
 
 Shpitser I., Pearl J. 2006 Identification of Joint Interventional Distributions in Recursive semi-Markovian Causal Models.
@@ -24,7 +25,7 @@ Shpitser I., Pearl J. 2006 Identification of Conditional Interventional Distribu
 
 \author{Santtu Tikka}
 
-\seealso{ \code{\link{parse.graphml}} }
+\seealso{ \code{\link{parse.graphml}}, \code{\link{get.expression}} }
 
 \examples{
 library(igraph)
