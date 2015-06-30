@@ -1,2 +1,4 @@
 export(causal.effect, get.expression, parse.graphml)
-import(ggm, igraph, XML)
+import(igraph,XML)
+importFrom(ggm,dSep)
+

@@ -21,8 +21,8 @@ causaleffect provides an implementation of this algorithm.
 \tabular{ll}{
 Package: \tab causaleffect\cr
 Type: \tab Package\cr
-Version: \tab 1.1.1\cr
-Date: \tab 2015-04-28\cr
+Version: \tab 1.1.3\cr
+Date: \tab 2015-06-30\cr
 License: \tab GPL-2\cr
 }
 The function \code{causal.effect} receives three character vectors describing the variables of interest and an \code{\link{igraph}} (package \code{igraph}) object as arguments and
@@ -31,8 +31,7 @@ returns a string or a list structure describing the interventional distribution 
 \author{Santtu Tikka <santtuth@gmail.com>}
 
 \references{
-Pearl J. 2009 \emph{Causality: Models, Reasoning and Inference}, New York: Cambridge University Press. 
-
+Pearl J. 2009 \emph{Causality: Models, Reasoning and Inference}, New York: Cambridge University Press. 
 Shpitser I., Pearl J. 2006a Identification of Joint Interventional Distributions in Recursive semi-Markovian Causal Models. \emph{Proceedings of the 21st National Conference on Artificial Intelligence}, \bold{2}, 1219--1226. 
 
 Shpitser I., Pearl J. 2006b Identification of Conditional Interventional Distributions. \emph{Proceedings of the 22nd Conference on Uncertainty in Artificial Intelligence}, 427--444.

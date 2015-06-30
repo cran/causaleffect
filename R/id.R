@@ -1,4 +1,4 @@
-id <-
+id <- 
 function(y, x, P, G, to) {
   G.obs <- observed.graph(G)
   e <- get.edge.attribute(G, "name")
@@ -22,8 +22,7 @@ function(y, x, P, G, to) {
   }
 
   # line 3
-  edges.to.x <- E(G) [1:length(E(G)) %->% x]
-  G.x.overbar <- subgraph.edges(G, E(G)[setdiff(E(G), edges.to.x)], delete.vertices = FALSE)
+  G.x.overbar <- subgraph.edges(G, E(G)[!to(x)], delete.vertices = FALSE)
   w <- setdiff(setdiff(v, x), ancestors(y, observed.graph(G.x.overbar), to))
   if (length(w) != 0) return(id(y, union(x, w), P, G, to))
 
