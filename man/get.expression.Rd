@@ -1,19 +1,18 @@
 \name{get.expression}
 \alias{get.expression}
 \title{Get the expression of a probability object}
-\description{This function converts an object of class \code{probability} returned by \code{causal.effect} with \code{expr = FALSE} into a string 
-which represents the interventional distribution. Currently only LaTeX syntax is available.}
+\description{This function converts an object of class \code{probability} returned by \code{aux.effect}, \code{causal.effect}, \code{meta.transport} or \code{transport} with \code{expr = FALSE} into a string which represents the probability distribution.  Currently only LaTeX syntax is available.  }
 
 \usage{get.expression(x)}
 
 \arguments{
   \item{x}{An object of class \code{probability} which is an internal list structure describing the interventional distribution.}
 }
-\value{A character string that describes the interventional distribution in LaTeX syntax.}
+\value{A character string that describes the resulting distribution in LaTeX syntax. }
 
 \author{Santtu Tikka}
 
-\seealso{ \code{\link{causal.effect}} }
+\seealso{ \code{\link{aux.effect}}, \code{\link{causal.effect}}, \code{\link{meta.transport}}, \code{\link{transport}} }
 
 \examples{
 library(igraph)

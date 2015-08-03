@@ -1,4 +1,4 @@
-unobserved.graph <- 
+unobserved.graph <-
 function(G) {
   unobs.edges <- which(edge.attributes(G)$description == "U")
   u <- length(unobs.edges)

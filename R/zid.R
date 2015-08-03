@@ -1,5 +1,5 @@
-id <-
-function(y, x, P, G, to) {
+zid <-
+function(y, x, Z, K, J, P, G, to) {
   G.obs <- observed.graph(G)
   v <- get.vertex.attribute(G, "name")
   v <- to[which(to %in% v)]
@@ -17,22 +17,34 @@ function(y, x, P, G, to) {
     anc.graph <- induced.subgraph(G, anc)
     var.nonign <- getNonIgnorableNodes(P)
     P$sumset <- intersect(setdiff(v, anc), var.nonign)
-    return(id(y, intersect(x, anc), P, anc.graph, to))
+    return(zid(y, intersect(x, anc), Z, K, J, P, anc.graph, to))
   }
 
   # line 3
-  G.x.overbar <- subgraph.edges(G, E(G)[!to(x)], delete.vertices = FALSE)
-  w <- setdiff(setdiff(v, x), ancestors(y, observed.graph(G.x.overbar), to))
-  if (length(w) != 0) return(id(y, union(x, w), P, G, to))
-
+  xkj <- intersect(v, union(x, union(K, J)))
+  G.xkj.overbar <- subgraph.edges(G, E(G)[!to(xkj)], delete.vertices = FALSE)
+  zw <- intersect(setdiff(setdiff(v, xkj), ancestors(y, observed.graph(G.xkj.overbar), to)), Z)
+  w <- setdiff(setdiff(setdiff(v, xkj), ancestors(y, observed.graph(G.xkj.overbar), to)), Z)
+  if (length(union(zw, w)) != 0) {
+    K <- union(K, zw)
+    P$do <- union(P$do, union(K, J))
+    G.k.overbar <- subgraph.edges(G, E(G)[!to(K)], delete.vertices = FALSE)
+    return(zid(y, union(x, w), setdiff(Z, zw), K, J, P, G.k.overbar, to))
+  }
 
   # line 4
-  G.remove.x <- induced.subgraph(G, v[!(v %in% x)])
-  s <- c.components(G.remove.x, to)
+  G.remove.xkj <- induced.subgraph(G, v[!(v %in% xkj)])
+  s <- c.components(G.remove.xkj, to)
   if (length(s) > 1) {
     productlist <- list()
-    for (i in 1:length(s)) productlist[[i]] <- id(s[[i]], setdiff(v, s[[i]]), P, G, to)
-    return(probability(sumset = setdiff(v, union(y, x)), recursive = TRUE, children = productlist))
+    for (i in 1:length(s)) {
+      J.prod <- union(J, intersect(Z, setdiff(v, s[[i]])))
+      P.prod <- P
+      P.prod$do <- union(P$do, union(K, J.prod))
+      G.j.overbar <- subgraph.edges(G, E(G)[!to(J.prod)], delete.vertices = FALSE)
+      productlist[[i]] <- zid(s[[i]], setdiff(setdiff(v, s[[i]]), Z), setdiff(Z, setdiff(v, s[[i]])), K, J.prod, P.prod, G.j.overbar, to)    
+    }
+    return(probability(sumset = setdiff(v, union(y, union(x, K))), recursive = TRUE, children = productlist))
   } else {
     s <- s[[1]]
     
@@ -58,24 +70,26 @@ function(y, x, P, G, to) {
         productlist <- list()
         for (i in 1:length(s)) { 
           if (P$recursive) {
-            productlist[[i]] <- parse.joint(P, s[i], v[0:(ind[i]-1)], v)
+            productlist[[i]] <- parse.joint(P, s[i], setdiff(v[0:(ind[i]-1)], union(K, J)), v)
           } else {
             P.prod <- P
+            P.prod$do <- union(K, J)
             P.prod$var <- s[i]
-            P.prod$cond <- v[0:(ind[i]-1)]
+            P.prod$cond <- setdiff(v[0:(ind[i]-1)], union(K, J))
             productlist[[i]] <- P.prod           
           }
         }  
         return(probability(sumset = setdiff(s, y), recursive = TRUE, children = productlist))
       } else {
         if (P$recursive) {
-          P.prod <- parse.joint(P, s[1], v[0:(ind[1]-1)], v)
+          P.prod <- parse.joint(P, s[1], setdiff(v[0:(ind[1]-1)], union(K, J)), v)
           P.prod$sumset <- union(P.prod$sumset, setdiff(s, y))
           return(P.prod)
         } else {
           P.prod <- P
+          P.prod$do <- union(K, J)
           P.prod$var <- s[1]
-          P.prod$cond <- v[0:(ind[1]-1)]
+          P.prod$cond <- setdiff(v[0:(ind[1]-1)], union(K, J))
           P.prod$sumset <- union(P.prod$sumset, setdiff(s, y))
           return(P.prod)         
         }
@@ -93,15 +107,15 @@ function(y, x, P, G, to) {
       for (i in 1:length(s)) { 
         P.prod <- P
         P.prod$var <- s[i]
-        P.prod$cond <- v[0:(ind[i]-1)]
+        P.prod$cond <- setdiff(v[0:(ind[i]-1)], union(K, J))
         productlist[[i]] <- P.prod
       }
-      return(id(y, intersect(x, s), probability(recursive = TRUE, children = productlist), s.graph, to))
+      return(zid(y, intersect(x, s), Z, K, J, probability(recursive = TRUE, children = productlist), s.graph, to))
     } else {
       P.prod <- P
       P.prod$var <- s[1]
-      P.prod$cond <- v[0:(ind[1]-1)]
-      return(id(y, intersect(x, s), P.prod, s.graph, to))
+      P.prod$cond <- setdiff(v[0:(ind[1]-1)], union(I, J))
+      return(zid(y, intersect(x, s), Z, K, J, P.prod, s.graph, to))
     }
   }
 }

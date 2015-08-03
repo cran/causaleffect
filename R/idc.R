@@ -1,4 +1,4 @@
-idc <- 
+idc <-
 function(y, x, z, P, G, to) {
   from <- NULL
   G.xz <- unobserved.graph(G)
