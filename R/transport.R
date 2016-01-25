@@ -19,7 +19,7 @@ function(y, x, z = NULL, D, expr = TRUE, simp = TRUE) {
     to.u <- get.vertex.attribute(D.unobs, "name")[to.u]
     res <- simplify.expression(res, D.unobs, to.u)
   }
-  res <- organizeTerms(res)
+  res <- organize.terms(res)
   if (expr) res <- get.expression(res)
   return(res)
 }

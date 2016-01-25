@@ -20,7 +20,7 @@ function(y, x, z, G, expr = TRUE, simp = TRUE) {
     to.u <- get.vertex.attribute(G.unobs, "name")[to.u]
     res <- simplify.expression(res, G.unobs, to.u)
   }
-  res <- organizeTerms(res)
+  res <- organize.terms(res)
   if (expr) res <- get.expression(res)
   return(res)
 }

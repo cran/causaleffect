@@ -15,7 +15,7 @@ function(y, x, D, expr = TRUE, simp = TRUE) {
     to.u <- lapply(1:d, function(x) get.vertex.attribute(D.unobs[[x]], "name")[to.u[[x]]])
     res <- simplify.meta.expression(res, D.unobs, to.u)
   }
-  res <- organizeTerms(res)
+  res <- organize.terms(res)
   if (expr) res <- get.expression(res)
   return(res)
 }

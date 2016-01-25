@@ -1,35 +1,43 @@
-parse.expression <-
-function(P) {
-  P.parse <- probability(recursive = TRUE, children = list())
-  j <- 1
-  remove <- c()
-  for (i in 1:length(P$children)) {
-    if (length(intersect(P$children[[i]]$var, P$sumset)) == 0 & length(intersect(P$children[[i]]$cond, P$sumset)) == 0) {
-      P.parse$children[[j]] <- P$children[[i]]
-      remove <- c(remove, i)
-      j <- j + 1
-    }
-  }
-  P$children[remove] <- NULL
-  if (length(P$children) == 0) return(P.parse)
-  k <- 0
-  j <- 0
-  while (k <= length(P$sumset) & length(P$sumset) > 0 & length(P$children) > 0) {
-    k <- k + 1
-    count <- 0
-    for (i in 1:length(P$children)) {
-      if (length(intersect(P$children[[i]]$var, P$sumset[k])) == 0 & length(intersect(P$children[[i]]$cond, P$sumset[k])) == 0) {
-        count <- count + 1
-        j <- i
+parse.expression <- 
+function(P, to, G.Adj) {
+  if (P$recursive) {
+    parse.children <- sapply(P$children, FUN = function(x) (x$recursive | length(x$sumset) > 0))
+    if (sum(parse.children) > 0) {
+      for (i in which(parse.children)) {
+        P$children[[i]] <- parse.expression(P$children[[i]], to, G.Adj)
       }
     }
-    if (count == 1) {
-      P$sumset <- P$sumset[-k]
-      P$children[[j]] <- NULL
-      k <- 0
+    if (length(P$children) > 0) {
+      parse.children <- sapply(P$children, FUN = function(x) (x$recursive | length(x$sumset) > 0))
+      if (sum(parse.children) > 0) return(P)
+    } else return(NULL)
+  }
+  if (length(P$sumset) == 0) return(P)
+
+  if (!P$recursive) { 
+    if (P$sumset == P$var) return(NULL)
+    else return(P)
+  }
+ 
+  P.sum <- P
+  P.sum <- simplify(P.sum, to, G.Adj)
+
+  P.parse <- probability(recursive = TRUE, children = list())
+  remove <- c()
+  if (length(P.sum$sumset) > 0) {
+    j <- 1
+    for (i in 1:length(P.sum$children)) {
+      if (length(intersect(P.sum$children[[i]]$var, P.sum$sumset)) == 0 & length(intersect(P.sum$children[[i]]$cond, P.sum$sumset)) == 0) {
+        P.parse$children[[j]] <- P.sum$children[[i]]
+        remove <- c(remove, i)
+        j <- j + 1
+      }
     }
   }
-  if (length(P$children) == 0) return(P.parse)
-  else P.parse$children[[length(P.parse$children)+1]] <- P
-  return(P.parse)
+
+  P.sum$children[remove] <- NULL
+  if (length(P.sum$children) > 0) P.parse$children[[length(P.parse$children) + 1]] <- P.sum
+  if (length(P.parse$children) == 0) return(P.sum)
+  return(P.parse)       
 }
+

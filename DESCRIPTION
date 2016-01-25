@@ -1,14 +1,16 @@
 Package: causaleffect
-Version: 1.2.0
-Date: 2015-08-03
+Version: 1.2.2
+Date: 2016-01-25
 Title: Deriving Expressions of Joint Interventional Distributions and
         Transport Formulas in Causal Models
 Author: Santtu Tikka
 Maintainer: Santtu Tikka <santtuth@gmail.com>
 Imports: ggm, igraph, XML
+Suggests: R.rsp
+VignetteBuilder: R.rsp
 Description: Functions for identification and transportation of causal effects.  Provides a conditional causal effect identification algorithm (IDC) by Ilya Shpitser and Judea Pearl, and algorithms for z-identifiability, transportability, z-transportability and meta-transportability of causal effects by Elias Bareinboim and Judea Pearl.  All of the previously mentioned algorithms are based on a causal effect identification algorithm by Jin Tian.
 License: GPL-2
 NeedsCompilation: no
-Packaged: 2015-08-03 06:45:17 UTC; Santtu
+Packaged: 2016-01-25 11:39:52 UTC; santikka
 Repository: CRAN
-Date/Publication: 2015-08-03 09:29:45
+Date/Publication: 2016-01-25 13:31:33

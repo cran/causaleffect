@@ -15,7 +15,7 @@ function(x) {
   } else {
     var.string <- paste(x$var, sep = "", collapse = ",")
     if (x$star) P <- paste(P, "P^*(", var.string, sep = "", collapse = "")
-    else if (!is.null(x$domain)) P <- paste(P, "P^{(", x$domain, ")}(", var.string, sep = "", collapse = "")
+    else if (length(x$domain) > 0) P <- paste(P, "P^{(", x$domain, ")}(", var.string, sep = "", collapse = "")
       else P <- paste(P, "P(", var.string, sep = "", collapse = "")
     if (length(x$do) > 0) {
       do.string <- paste("do(", x$do, ")", sep = "")

@@ -1,4 +1,4 @@
 export(aux.effect, causal.effect, get.expression, meta.transport, parse.graphml, transport)
 import(igraph,XML)
-importFrom(ggm,dSep)
+importFrom(ggm,dSep,powerset)
 
