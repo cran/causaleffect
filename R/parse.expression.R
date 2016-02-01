@@ -18,9 +18,14 @@ function(P, to, G.Adj) {
     if (P$sumset == P$var) return(NULL)
     else return(P)
   }
+
+  ord.children <- order(unlist(lapply(P$children, FUN = function(x) which(to == x$var))), decreasing = TRUE)
+  ord.sum <- order(sapply(P$sumset, FUN = function(x) which(to == x)), decreasing = TRUE)
  
   P.sum <- P
-  P.sum <- simplify(P.sum, to, G.Adj)
+  P.sum$children <- P.sum$children[ord.children]
+  P.sum$sumset <- P.sum$sumset[ord.sum]
+  P.sum <- simplify(P.sum, G.Adj)
 
   P.parse <- probability(recursive = TRUE, children = list())
   remove <- c()

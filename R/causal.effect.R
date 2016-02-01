@@ -13,7 +13,7 @@ function(y, x, z = NULL, G, expr = TRUE, simp = TRUE) {
   res <- probability()
   if (length(z) == 0) { 
     res <- id(y, x, probability(), G, to)
-    res <- organize.terms(res)
+    # res <- organize.terms(res)
   } else { 
     res <- idc(y, x, z, probability(), G, to)
     # res <- organize.terms(res)

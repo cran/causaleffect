@@ -1,3 +1,6 @@
+Changes from version 1.2.2 to 1.2.3
+ * Fixed an issue in the simplification procedure.
+
 Changes from version 1.2.1 to 1.2.2
  * Added package vignette. Updated the simplification procedure to handle more situations.
 
