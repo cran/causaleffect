@@ -1,10 +1,10 @@
-e1dbfbe05d215991ed360bb82e4cf2ee *DESCRIPTION
+c3ab65beefa9c5b7f94de2eaf0bbcf53 *DESCRIPTION
 7b28c8c21028b9354187cc2ea7794720 *NAMESPACE
-67651b0eb5188bb2dcca5bc8c62dc86e *NEWS
+e4d5240a12bcd7a069ac2362ed38075e *NEWS
 d573a8437a04402ae05c2881ecbbb130 *R/activate.interventions.R
 2fca1aeeb4a8924fd8a53e6527778394 *R/ancestors.R
 c6ad2941c0fafff7f5f4bd26e318630b *R/c.components.R
-fd6eab54f6fec55bb41a006b2e2c5262 *R/causal.effect.R
+af986266b70ac5800b9f94ba9da5913b *R/causal.effect.R
 2712444a70b9f3423ecaa3cf7aeb6782 *R/deconstruct.R
 490e786d527395bd22571b31902bc05d *R/factorize.R
 208e6c2c66b666ef0f2d4ca3cac9d233 *R/gather.R
@@ -18,7 +18,7 @@ f516fc0579d4229d6d1e050ecab04777 *R/is.prefix.R
 fa7d5517342c87beb3314e2d96c90c89 *R/observed.graph.R
 b72b8a24656a88b3758c30b20b840619 *R/organize.terms.R
 b45085c8996e4fe87cf553ce483c587b *R/parse.deconstruct.R
-a8f4665afb6d21ff92b6ae7cf0237541 *R/parse.expression.R
+9c7b0d225ba73afaceca7575ec0268d3 *R/parse.expression.R
 c07b98eaca0c1ef8a5c5986354ee92e6 *R/parse.graphml.R
 4fee3b53d232113a21200f39c8dfecf4 *R/parse.graphml.internal.R
 9b29b283f86455dc1b9c4abc903a313a *R/parse.graphml.standard.R
@@ -27,7 +27,7 @@ ed8d8eaa4517c0474bce9ef52bd9ffe9 *R/parse.joint.R
 b62dc53929c7696c92ed3b044971e0b5 *R/probability.R
 ca60bdeb7a9c37ad672d840157fa7f06 *R/sc.components.R
 8f4f5cd45bfc8e49a08a12d719b0638a *R/sid.R
-4cb1c2d6826cb43f8d6f969737f70e49 *R/simplify.R
+2d56846f1a10c18541207e205313b597 *R/simplify.R
 722d88effcb929a1c13ac2323f452628 *R/simplify.expression.R
 a2c2e3c3acfe6fceed8a04efb00ce509 *R/simplify.meta.expression.R
 488b6851c3221542f7f46634c7418006 *R/transport.R
@@ -35,10 +35,11 @@ d98d6879b3a31b73115ab10b905376f2 *R/trz.R
 d163b9f0bd476b85e69c8363c1d64d89 *R/unobserved.graph.R
 d8b65acbd6de59c0bc29bf0acd3e0146 *R/usid.R
 5dc3f67e8817c0bc05a5d75ed40d3cb6 *R/wrap.dSep.R
+5ac0ac6e2c8cf86f811874711b26d4b5 *R/zero.children.R
 abb6879fc13f5667bbde9cb9cd4d0d71 *R/zid.R
 4f1ff1e4178d86fb98b5ad244615956c *R/zzaux.effect.R
 d24a7a7e8ad7907f74bd9cce4e5c3a51 *build/vignette.rds
-870c23d5f173fd780fb104a16f62db00 *inst/doc/causaleffect.pdf
+b060cc32086fc011d17c9418a4ff4d62 *inst/doc/causaleffect.pdf
 4f1b9ec68f57fe8c44cf3d47b65413fa *inst/doc/causaleffect.tex.rsp
 72aadccd014da431a724f1426a4c3ed3 *man/causal.effect.Rd
 a4475b23380950546049bea239ddbd08 *man/causaleffect-package.Rd

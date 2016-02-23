@@ -1,3 +1,6 @@
+Changes from vesrion 1.2.3 to 1.2.4
+ * Fixed an issue regarding the simplification of conditional causal effects.
+
 Changes from version 1.2.2 to 1.2.3
  * Fixed an issue in the simplification procedure.
 

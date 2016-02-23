@@ -9,9 +9,10 @@ function(P, to, G.Adj) {
     }
     if (length(P$children) > 0) {
       parse.children <- sapply(P$children, FUN = function(x) (x$recursive | length(x$sumset) > 0))
-      if (sum(parse.children) > 0) return(P)
+       if (sum(parse.children) > 0) return(P)
     } else return(NULL)
   }
+
   if (length(P$sumset) == 0) return(P)
 
   if (!P$recursive) { 
@@ -36,13 +37,14 @@ function(P, to, G.Adj) {
         P.parse$children[[j]] <- P.sum$children[[i]]
         remove <- c(remove, i)
         j <- j + 1
-      }
+     }
     }
   }
 
   P.sum$children[remove] <- NULL
   if (length(P.sum$children) > 0) P.parse$children[[length(P.parse$children) + 1]] <- P.sum
   if (length(P.parse$children) == 0) return(P.sum)
-  return(P.parse)       
+  return(P.parse)  
+  return(P.sum)     
 }
 

@@ -19,17 +19,18 @@ function(P, G.Adj) {
     while (k <= q) {  
       joint <- join(J, D, P$children[[omega[k]]]$var, P$children[[omega[k]]]$cond, G.Adj)
       if (length(joint[[1]]) <= length(J)) {
-        fail.terms <- c(fail.terms, list(omega[1:(k-1)]))
-        n <- n + 1
-        while (n < factorials[q-1]) {
-          omega <- perm(I, n, q)
-          if (is.prefix(fail.terms, omega)) n <- n + 1
-          else break
-        }
-        if (n > factorials[q-1]) break
+        #fail.terms <- c(fail.terms, list(omega[1:(k-1)]))
+        #n <- n + 1
+        #while (n < factorials[q-1]) {
+        #  omega <- perm(I, n, q)
+        #  if (is.prefix(fail.terms, omega)) n <- n + 1
+        #  else break
+        #}
+        #if (n > factorials[q-1]) break
         J <- character()
         D <- character()
         k <- 1
+        break
       } else {
         k <- k + 1
         J <- joint[[1]]

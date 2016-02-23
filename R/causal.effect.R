@@ -29,7 +29,7 @@ function(y, x, z = NULL, G, expr = TRUE, simp = TRUE) {
     res <- parse.expression(res, to, G.Adj)
     if (length(res$divisor$children) > 0) {
       res$divisor <- parse.expression(res$divisor, to, G.Adj)
-      if (length(res$divisor$children) == 0) {
+      if (zero.children(res$divisor)) {
         res$fraction <- FALSE
         res$divisor <- list()
       }
