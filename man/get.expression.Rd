@@ -1,7 +1,7 @@
 \name{get.expression}
 \alias{get.expression}
 \title{Get the expression of a probability object}
-\description{This function converts an object of class \code{probability} returned by \code{aux.effect}, \code{causal.effect}, \code{meta.transport} or \code{transport} with \code{expr = FALSE} into a string which represents the probability distribution.  Currently only LaTeX syntax is available.  }
+\description{This function converts an object of class \code{probability} returned by \code{aux.effect}, \code{causal.effect}, \code{generalize}, \code{meta.transport}, \code{recover} or \code{transport} with \code{expr = FALSE} into a string which represents the probability distribution.  Currently only LaTeX syntax is available.  }
 
 \usage{get.expression(x)}
 
@@ -12,7 +12,7 @@
 
 \author{Santtu Tikka}
 
-\seealso{ \code{\link{aux.effect}}, \code{\link{causal.effect}}, \code{\link{meta.transport}}, \code{\link{transport}} }
+\seealso{ \code{\link{aux.effect}}, \code{\link{causal.effect}}, \code{\link{generalize}}, \code{\link{meta.transport}}, \code{\link{recover}}, \code{\link{transport}} }
 
 \examples{
 library(igraph)

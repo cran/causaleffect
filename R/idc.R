@@ -1,5 +1,11 @@
 idc <-
-function(y, x, z, P, G, to) {
+function(y, x, z, P, G, to, tree) {
+  G.obs <- observed.graph(G)
+  v <- get.vertex.attribute(G, "name")
+  v <- to[which(to %in% v)]
+  if (length(P$var) == 0) tree$call <- list(y = y, x = x, z = z, P = probability(var = v), G = G, line = "", v = v)
+  else tree$call <- list(y = y, x = x, z = z, P = P, G = G, line = "", v = v)
+  tree$branch <- list()
   from <- NULL
   G.xz <- unobserved.graph(G)
   edges.to.x <- E(G.xz)[to(x)]
@@ -9,8 +15,15 @@ function(y, x, z, P, G, to) {
   for (node in z) {
     cond <- setdiff(z, node)
     if (dSep(A, y, node, union(x, cond))) {
-      return(idc(y, union(x, node), cond, P, G, to))
+      tree$call$line <- 9
+      tree$call$z.prime <- node
+      nxt <- idc(y, union(x, node), cond, P, G, to, list())
+      tree$branch[[1]] <- nxt$tree
+      return(list(P = nxt$P, tree = tree))
     } 
   }
-  return(id(union(y, z), x, P, G, to))
+  tree$call$line <- 10
+  nxt <- id(union(y, z), x, P, G, to, list())
+  tree$branch[[1]] <- nxt$tree
+  return(list(P = nxt$P, tree = tree))
 }

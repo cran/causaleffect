@@ -1,4 +1,5 @@
-join <- function(J, D, vari, cond, G.Adj) {
+join <- 
+function(J, D, vari, cond, S, M, O, G.adj, G, G.obs, to) {
   J.new <- character()
   D.new <- character()
   if (length(J) == 0) {
@@ -7,29 +8,33 @@ join <- function(J, D, vari, cond, G.Adj) {
     return(list(J.new, D.new))
   }
 
-  if (length(intersect(J, cond)) > 0 && vari %in% D) {
-    return(list(J, D))
+  non.mis <- min(which(J %in% O))
+  V.prev <- J[non.mis]
+  ind <- which(to == V.prev)
+  V.pi <- to[0:(ind-1)]
+    
+  anc <- ancestors(vari, G.obs, to)
+  cond.diff <- setdiff(union(vari, setdiff(V.pi, anc)), J)
+
+  ds <- powerset(cond.diff, nonempty = FALSE)
+  n <- length(ds)
+  for (i in 1:n) {
+    add <- union(anc, ds[[i]])
+    add.v <- setdiff(add, vari)
+    a.set <- union(setdiff(add, D), setdiff(D, add))
+    b.set <- union(setdiff(add.v, cond), setdiff(cond, add.v))
+    if (wrap.dSep(G.adj, J, a.set, setdiff(D, a.set)) && 
+        wrap.dSep(G.adj, vari, b.set, setdiff(cond, b.set))) {
+      J.new <- union(J, vari)
+      D.new <- add.v
+      return(list(J.new, D.new))
+    }
   }
-
-  cond.uni <- union(D, cond)
-
-  if (length(cond.uni) > 0) {
-    ds <- powerset(cond.uni, nonempty = FALSE)
-    n <- length(ds)
-    for (i in 1:n) {
-      a.set <- union(setdiff(ds[[i]], setdiff(D, vari)), setdiff(setdiff(D, vari), ds[[i]]))
-      b.set <- union(setdiff(ds[[i]], setdiff(cond, J)), setdiff(setdiff(cond, J), ds[[i]]))
-      if (wrap.dSep(G.Adj, J, a.set, setdiff(D, a.set)) && 
-          wrap.dSep(G.Adj, vari, b.set, setdiff(cond, b.set))) {
-        J.new <- union(J, vari)
-        D.new <- ds[[i]]
-        return(list(J.new, D.new))
-      }
-    } 
-  } else {
-    J.new <- union(J, vari)
-    D.new <- cond
-    return(list(J.new, D.new))
+  if (any(M %in% D)) {
+    joint <- insert(J, D, M, cond, S, O, G.adj, G, G.obs, to)
+    if (length(joint[[1]]) > length(J)) {
+      return(joint)
+    }
   }
 
   return(list(J, D))

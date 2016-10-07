@@ -1,28 +1,34 @@
 parse.deconstruct <-
 function(P) {
-  i <- 1
-  k <- 0
-  if (length(P$sumset) == 0) {
-    while (i <= length(P$children) & length(P$children) > 0 & length(P$divisor$children) > 0) {
-      is.element <- FALSE
-      for (j in 1:length(P$divisor$children)) {
-        if (identical(P$children[[i]], P$divisor$children[[j]], attrib.as.set = TRUE)) {
-          is.element <- TRUE
-          k <- j
-          break
-        }
-      }
-      if (is.element) {
-        P$divisor$children[[k]] <- NULL
-        P$children[[i]] <- NULL
-        i <- 0
-      }
-      i <- i + 1
+  if (P$product) {
+    for (i in 1:length(P$children)) {
+      P$children[[i]] <- parse.deconstruct(P$children[[i]])
     }
-  }
-  if (length(P$divisor$children) == 0) {
-    P$fraction <- FALSE
-    P$divisor <- list()
-  }
+  } 
+  if (P$fraction) {
+    i <- 1
+    k <- 0
+    if (length(P$num$sumset) == 0) {
+      while (i <= length(P$num$children) & length(P$num$children) > 0 & length(P$den$children) > 0) {
+        is.element <- FALSE
+        for (j in 1:length(P$den$children)) {
+          if (identical(P$num$children[[i]], P$den$children[[j]], attrib.as.set = TRUE)) {
+            is.element <- TRUE
+            k <- j
+            break
+          }
+        }
+        if (is.element) {
+          P$num$children[i] <- NULL
+          P$den$children[k] <- NULL
+          i <- 0
+        }
+        i <- i + 1
+      }
+    }
+    if (length(P$den$children) == 0) {
+      return(P$num)
+    }
+  }  
   return(P)
 }
