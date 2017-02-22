@@ -1,16 +1,15 @@
-recover <-
-function(y, x, G, expr = TRUE, simp = TRUE, steps = FALSE) {
+recover <- function(y, x, G, expr = TRUE, simp = TRUE, steps = FALSE, primes = FALSE) {
   if (!is.dag(observed.graph(G))) stop("Graph 'G' is not a DAG")
   sel <- which(vertex.attributes(G)$description == "S")
   if (length(sel) == 0) stop("No selection variables present in the diagram.")
   if (length(sel) > 1) stop("Multiple selection variables are not supported.")
-  G <- set.vertex.attribute(G, "name", sel, paste(get.vertex.attribute(G, "name")[sel], "= 1"))
   G.obs <- observed.graph(G)
   to <- topological.sort(G.obs)
   v.s <- get.vertex.attribute(G, "name")
   to <- v.s[to]
   if (length(setdiff(y, to)) > 0) stop("Set 'y' contains variables not present in the graph.")
   if (length(setdiff(x, to)) > 0) stop("Set 'x' contains variables not present in the graph.")
+  if (length(intersect(x, y)) > 0) stop("Sets 'x' and 'y' are not disjoint. ")
   s <- v.s[sel]
   s <- to[which(to %in% s)]
   G.causal <- induced.subgraph(G, v.s[!(v.s %in% s)])
@@ -25,7 +24,8 @@ function(y, x, G, expr = TRUE, simp = TRUE, steps = FALSE) {
   cg <- length(cc)
   res <- probability()
   tree <- list()
-  tree$call <- list(y = y, x = x, d = D, T.prime = T.prime, P = probability(var = v, cond = s), G = G, line = 1, v = v)
+  tree$call <- list(y = y, x = x, d = D, T.prime = T.prime, 
+    P = probability(var = v, cond = paste0(s, " = 1")), G = G, line = 1, v = v)
   product.list <- list()
   nxt.list <- list()
   for (i in 1:cg) {
@@ -41,18 +41,10 @@ function(y, x, G, expr = TRUE, simp = TRUE, steps = FALSE) {
     res <- product.list[[1]]
     res$sumset <- union(res$sumset, setdiff(D, y))
   }
-  # if (simp) {
-  #   G.unobs <- unobserved.graph(G)
-  #   G.adj <- as.matrix(get.adjacency(G.unobs))
-  #   to.u <- topological.sort(G.unobs)
-  #   to.u <- get.vertex.attribute(G.unobs, "name")[to.u]
-  #   res.prob <- deconstruct(res, probability())
-  #   res.prob <- parse.expression(res, to, G.adj, G, G.obs)
-  #   res.prob <- deconstruct(res, probability())
-  #   res.prob <- parse.deconstruct(res.prob)
-  #   # final cancellations here
-  # }
-  if (expr) res <- get.expression(res)
+  res <- activate.selection.variable(res, s)
+  attr(res, "algorithm") <- "rc"
+  attr(res, "query") <- list(y = y, x = x, s = s)
+  if (expr) res <- get.expression(res, primes)
   if (steps) return(list(P = res, steps = tree))
   return(res)
 }

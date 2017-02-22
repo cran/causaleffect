@@ -1,51 +1,58 @@
-id <-
-function(y, x, P, G, to, tree) {
-  G.obs <- observed.graph(G)
-  v <- get.vertex.attribute(G, "name")
-  v <- to[which(to %in% v)]
-  anc <- ancestors(y, G.obs, to)
+id <- function(y, x, P, G, G.obs, v, to, tree) {
   if (length(P$var) == 0 & !(P$product | P$fraction)) tree$call <- list(y = y, x = x, P = probability(var = v), G = G, line = "", v = v)
   else tree$call <- list(y = y, x = x, P = P, G = G, line = "", v = v)
 
   # line 1
   if (length(x) == 0) {
     if (P$product | P$fraction) {
-      P$sumset <- union(setdiff(v, y), P$sumset)
-      P <- simplify.expression(P, NULL)
+      P$sumset <- union(setdiff(v, y), P$sumset) %ts% to
+      # P <- simplify.expression(P, NULL)
     } else {
-      P$var <- y     
+      P$var <- y
     }
     tree$call$line <- 1
     tree$root <- P
     return(list(P = P, tree = tree))
   }
 
+  an <- ancestors(y, G.obs, to)
+
   # line 2
-  if (length(setdiff(v, anc)) != 0) {
-    anc.graph <- induced.subgraph(G, anc)
+  if (length(setdiff(v, an)) != 0) {
+    G.an <- induced.subgraph(G, an)
+    G.an.obs <- observed.graph(G.an)
     if (P$product | P$fraction) {
-      P$sumset <- union(setdiff(v, anc), P$sumset)
-      P <- simplify.expression(P, NULL)
+      P$sumset <- union(setdiff(v, an), P$sumset) %ts% to
+      # P <- simplify.expression(P, NULL)
     } else {
-      P$var <- anc     
+      P$var <- an
     }
-    nxt <- id(y, intersect(x, anc), P, anc.graph, to, list())
+    nxt <- id(y, intersect(x, an), P, G.an, G.an.obs, an, to, list())
     tree$branch[[1]] <- nxt$tree
     tree$call$line <- 2
-    tree$call$anc <- anc
+    tree$call$an <- an
     return(list(P = nxt$P, tree = tree))
   }
 
   # line 3
-  G.x.overbar <- subgraph.edges(G, E(G)[!to(x)], delete.vertices = FALSE)
-  anc.xbar <- ancestors(y, observed.graph(G.x.overbar), to)
-  w <- setdiff(setdiff(v, x), anc.xbar)
-  if (length(w) != 0) {
-    nxt <- id(y, union(x, w), P, G, to, list())
+  G.xbar <- subgraph.edges(G, E(G)[!to(x)], delete.vertices = FALSE)
+  an.xbar <- ancestors(y, observed.graph(G.xbar), to)
+  w <- setdiff(setdiff(v, x), an.xbar)
+  w.len <- length(w)
+  if (w.len != 0) {
+    co <- connected(w, y, G.xbar, to)
+    if (length(co) < w.len) {
+      v.new <- setdiff(v, setdiff(w, co))
+      G <- induced.subgraph(G, v.new)
+      G.obs <- observed.graph(G)
+      v <- v.new
+    }
+    nxt <- id(y, union(x, co) %ts% to, P, G, G.obs, v, to, list())
+    # nxt <- id(y, union(x, w), P, G, to, list())
     tree$branch[[1]] <- nxt$tree
     tree$call$line <- 3
     tree$call$w <- w
-    tree$call$anc.xbar <- anc.xbar
+    tree$call$an.xbar <- an.xbar
     return(list(P = nxt$P, tree = tree))
   }
 
@@ -54,23 +61,21 @@ function(y, x, P, G, to, tree) {
   s <- c.components(G.remove.x, to)
   if (length(s) > 1) {
     tree$call$line <- 4
-    product.list <- list()
-    nxt.list <- list()
-    for (i in 1:length(s)) { 
-      nxt.list[[i]] <- id(s[[i]], setdiff(v, s[[i]]), P, G, to, list())
-      product.list[[i]] <- nxt.list[[i]]$P
-      tree$branch[[i]] <- nxt.list[[i]]$tree
-    }
+    nxt <- lapply(s, function(t) {
+      return(id(t, setdiff(v, t), P, G, G.obs, v, to, list()))
+    })
+    product.list <- lapply(nxt, "[[", "P")
+    tree$branch <- lapply(nxt, "[[", "tree")
     return(list(
       P = probability(sumset = setdiff(v, union(y, x)), product = TRUE, children = product.list),
-      tree = tree 
+      tree = tree
     ))
   } else {
     s <- s[[1]]
-    
+
     # line 5 
-    cG <- c.components(G, to)
-    if (identical(cG[[1]], v)) {
+    cc <- c.components(G, to)
+    if (identical(cc[[1]], v)) {
       v.string <- paste(v, sep = "", collapse = ",")
       s.string <- paste(s, sep = "", collapse = ",")
       tree$call$line <- 5
@@ -78,70 +83,67 @@ function(y, x, P, G, to, tree) {
     }
    
     # line 6
-    is.element <- FALSE
-    for (i in 1:length(cG)) {
-      if (identical(s, cG[[i]])) {
-        is.element <- TRUE
-        break
-      }
-    }
-    if (is.element) {
+    pos <- Position(function(x) identical(s, x), cc, nomatch = 0)
+    if (pos > 0) {
       tree$call$line <- 6
       tree$call$s <- s
       ind <- which(v %in% s)
-      product.list <- list()
-      P.prod <- probability()
       s.len <- length(s)
-      for (i in 1:s.len) { 
+      product.list <- vector(mode = "list", length = s.len)
+      P.prod <- probability()
+      for (i in s.len:1) {
+        # cond.set <- causal.parents(s[i], v[1:ind[i]], G, G.obs, to)
+        cond.set <- v[0:(ind[i]-1)]
         if (P$product) {
-          P.prod <- parse.joint(P, s[i], v[0:(ind[i]-1)], v)
-          P.prod <- simplify.expression(P.prod, NULL)
+          P.prod <- parse.joint(P, s[i], cond.set, v, to)
+          # P.prod <- simplify.expression(P.prod, NULL)
         } else {
           P.prod <- P
           P.prod$var <- s[i]
-          P.prod$cond <- v[0:(ind[i]-1)]          
+          P.prod$cond <- cond.set
         }
-        product.list[[i]] <- P.prod 
-      }  
+        product.list[[s.len - i + 1]] <- P.prod
+      }
       if (s.len > 1) {
         P.new <- probability(sumset = setdiff(s, y), product = TRUE, children = product.list)
-        P.new <- simplify.expression(P.new, NULL)
+        # P.new <- simplify.expression(P.new, NULL)
         tree$root <- P.new
         return(list(P = P.new, tree = tree))
       } 
       if (P.prod$product | P.prod$fraction) {
-        P.prod$sumset <- union(P.prod$sumset, setdiff(s, y))
-        P.prod <- simplify.expression(P.prod, NULL)
+        P.prod$sumset <- union(P.prod$sumset, setdiff(s, y)) %ts% to
+        # P.prod <- simplify.expression(P.prod, NULL)
       } else {
-        P.prod$var <- setdiff(P.prod$var, union(P.prod$sumset, setdiff(s, y)))    
-      }        
+        P.prod$var <- setdiff(P.prod$var, union(P.prod$sumset, setdiff(s, y)))
+      }
       tree$root <- P.prod
       return(list(P = P.prod, tree = tree))
     }
-    
+
     # line 7
     tree$call$s <- s
-    set.contain <- unlist(lapply(cG, FUN = function(x) setequal(intersect(x, s), s)))
-    set.contain <- which(set.contain)[1]
-    s <- cG[[set.contain]]
+    s <- Find(function(x) all(s %in% x), cc)
     tree$call$line <- 7
     tree$call$s.prime <- s
-    product.list <- list()
-    ind <- which(v %in% s)
-    s.graph <- induced.subgraph(G, s)
     s.len <- length(s)
-    for (i in 1:s.len) { 
+    product.list <- vector(mode = "list", length = s.len)
+    ind <- which(v %in% s)
+    G.s <- induced.subgraph(G, s)
+    G.s.obs <- observed.graph(G.s)
+    for (i in s.len:1) {
+      # cond.set <- causal.parents(s[i], v[1:ind[i]], G, G.obs, to)
+      cond.set <- v[0:(ind[i]-1)]
       P.prod <- P
       P.prod$var <- s[i]
-      P.prod$cond <- v[0:(ind[i]-1)]
-      product.list[[i]] <- P.prod
+      P.prod$cond <- cond.set
+      product.list[[s.len - i + 1]] <- P.prod
     }
     x.new <- intersect(x, s)
     nxt <- NULL
-    if (s.len > 1) nxt <- id(y, x.new, probability(product = TRUE, children = product.list), s.graph, to, list())
-    else nxt <- id(y, x.new, product.list[[1]], s.graph, to, list())
-    tree$branch[[1]] <- nxt$tree 
+    if (s.len > 1) nxt <- id(y, x.new, probability(product = TRUE, children = product.list), G.s, G.s.obs, s, to, list())
+    else nxt <- id(y, x.new, product.list[[1]], G.s, G.s.obs, s, to, list())
+    tree$branch[[1]] <- nxt$tree
     return(list(P = nxt$P, tree = tree))
-    
   }
+
 }
