@@ -1,4 +1,4 @@
-trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
+trmz_ex <- function(y, x, P, J, domain, w.index, D, Z, topo, tree, prioritize) {
   to <- NULL
   from <- NULL
   description <- NULL
@@ -41,7 +41,7 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
     } else {
       P$var <- anc
     }
-    nxt <- trmz(y, intersect(x, anc), P, J, domain, w.index, anc.graph, Z, topo, list())
+    nxt <- trmz_ex(y, intersect(x, anc), P, J, domain, w.index, anc.graph, Z, topo, list(), prioritize)
     tree$branch[[1]] <- nxt$tree
     tree$call$line <- 2
     tree$call$id <- nxt$tree$call$id
@@ -54,7 +54,7 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
   anc.xbar <- ancestors(y, observed.graph(D.x.overbar), topo[[1]])
   w <- setdiff(setdiff(v, x), anc.xbar)
   if (length(w) != 0) {
-    nxt <- trmz(y, union(x, w), P, J, domain, w.index, D, Z, topo, list())
+    nxt <- trmz_ex(y, union(x, w), P, J, domain, w.index, D, Z, topo, list(), prioritize)
     tree$branch[[1]] <- nxt$tree
     tree$call$line <- 3
     tree$call$id <- nxt$tree$call$id
@@ -73,8 +73,8 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
     nxt.list <- vector(mode = "list", length = cc.len)
     id.list <- logical(length = cc.len)
     for (i in 1:cc.len) {
-      if (i == 1) nxt.list[[1]] <- trmz(cc[[1]], setdiff(v, cc[[1]]), P, J, domain, w.index, D, Z, topo, list())
-      else nxt.list[[i]] <- trmz(cc[[i]], setdiff(v, cc[[i]]), P, J, domain, nxt.list[[i-1]]$W, D, Z, topo, list())
+      if (i == 1) nxt.list[[1]] <- trmz_ex(cc[[1]], setdiff(v, cc[[1]]), P, J, domain, w.index, D, Z, topo, list(), prioritize)
+      else nxt.list[[i]] <- trmz_ex(cc[[i]], setdiff(v, cc[[i]]), P, J, domain, nxt.list[[i-1]]$W, D, Z, topo, list(), prioritize)
       product.list[[i]] <- nxt.list[[i]]$P
       tree$branch[[i]] <- nxt.list[[i]]$tree
       id.list[i] <- nxt.list[[i]]$tree$call$id
@@ -89,6 +89,50 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
 
   # line 5
   else {
+
+    if (prioritize) {
+
+      # line 10
+      E.tr <- list()
+      if (length(J) == 0) {
+        tree$call$line <- 10
+        ind <- 0
+        W.new <- w.index + 1
+        for (i in 1:length(D)) {
+          A <- unobserved.graph(D[[i]])
+          A <- subgraph.edges(A, E(A)[!to(x)], delete.vertices = FALSE)
+          A <- as.matrix(get.adjacency(A))
+          if (wrap.dSep(A, s[[i]], y, x) & (length(intersect(Z[[i]], x)) != 0)) {
+            P.new <- P
+            P.new$domain <- i
+            xcapz <- intersect(Z[[i]], x)
+            D.remove.xcapz <- lapply(1:d, function(x) induced.subgraph(D[[x]], v.s[[x]][!(v.s[[x]] %in% xcapz)]))
+            nxt <- trmz_ex(y, setdiff(x, Z[[i]]), P, xcapz, i, W.new, D.remove.xcapz, Z, topo, list(), prioritize)
+            if (nxt$tree$call$id) {
+              ind <- ind + 1
+              tree$branch[[ind]] <- nxt$tree
+              E.new <- nxt$P
+              W.new <- nxt$W
+              E.new <- activate.interventions(E.new, i, xcapz)
+              E.tr[[ind]] <- E.new
+            }
+          }
+        }
+
+        # line 11
+        if (length(E.tr) > 1) {
+          P.new <- probability(sum = TRUE, children = E.tr, weight = w.index)
+          tree$root <- P.new
+          tree$call$id <- TRUE
+          return(list(P = P.new, W = W.new, tree = tree))
+        }
+        if (length(E.tr) == 1) {
+          tree$root <- E.tr[[1]]
+          tree$call$id <- TRUE
+          return(list(P = E.tr[[1]], W = W.new, tree = tree))
+        }
+      }
+    }
 
     cc <- cc[[1]]
     cG.s <- lapply(1:d, function(x) sc.components(D[[x]], topo[[x]]))
@@ -134,7 +178,7 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
 
       # line 8
 
-      tree$call$czero <- cc
+      tree$call$c.zero <- cc
       cc.s <- lapply(cG.s, function(x) {
         x[[which(unlist(lapply(x, function(y) all(cc %in% y))))]]
       })
@@ -147,7 +191,7 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
       cc.graph <- lapply(1:d, function(x) induced.subgraph(D[[x]], cc.s[[x]]))
       kappa <- c()
       if (cc.len > 1) {
-        for (i in 1:cc.len) {
+        for (i in 1:cc.len) { 
           kappa <- union(kappa, setdiff(v[0:(ind[i]-1)], cc))
           if (P$product) {
             P.prod <- parse.joint(P, cc[i], union(intersect(v[0:(ind[i]-1)], cc), kappa), v, topo)
@@ -160,7 +204,7 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
             product.list[[cc.len - i + 1]] <- P.prod
           }
         }
-        nxt <- trmz(y, intersect(x, cc), probability(product = TRUE, children = product.list), J, domain, w.index, cc.graph, Z, topo, list())
+        nxt <- trmz_ex(y, intersect(x, cc), probability(product = TRUE, children = product.list), J, domain, w.index, cc.graph, Z, topo, list(), prioritize)
         tree$branch[[1]] <- nxt$tree
         tree$call$id <- nxt$tree$call$id
         return(list(P = nxt$P, W = nxt$W, tree = tree))
@@ -169,15 +213,15 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
         if (P$product) {
           P.prod <- parse.joint(P, cc, union(intersect(v[0:(ind[i]-1)], cc), kappa) , v, topo)
           P.prod <- simplify.expression(P.prod, NULL)
-          nxt <- trmz(y, intersect(x, cc), P.prod, J, domain, w.index, cc.graph, Z, topo, list())
+          nxt <- trmz_ex(y, intersect(x, cc), P.prod, J, domain, w.index, cc.graph, Z, topo, list(), prioritize)
           tree$branch[[1]] <- nxt$tree
           tree$call$id <- nxt$tree$call$id
           return(list(P = nxt$P, W = nxt$W, tree = tree))
         } else {
           P.prod <- P
           P.prod$var <- cc
-          P.prod$cond <- union(intersect(v[0:(ind[1]-1)], cc), kappa) 
-          nxt <- trmz(y, intersect(x, cc), P.prod, J, domain, w.index, cc.graph, Z, topo, list())
+          P.prod$cond <- union(intersect(v[0:(ind[1]-1)], cc), kappa)
+          nxt <- trmz_ex(y, intersect(x, cc), P.prod, J, domain, w.index, cc.graph, Z, topo, list(), prioritize)
           tree$branch[[1]] <- nxt$tree
           tree$call$id <- nxt$tree$call$id
           return(list(P = nxt$P, W = nxt$W, tree = tree))
@@ -187,52 +231,59 @@ trmz <- function(y, x, P, J, domain, w.index, D, Z, topo, tree) {
     # line 9
     } else {
 
-      E.tr <- list()
-      if (length(J) == 0) {
-        tree$call$line <- 10
-        ind <- 0
-        W.new <- w.index + 1
-        for (i in 1:length(D)) {
-          A <- unobserved.graph(D[[i]])
-          A <- subgraph.edges(A, E(A)[!to(x)], delete.vertices = FALSE)
-          A <- as.matrix(get.adjacency(A))
-          if (wrap.dSep(A, s[[i]], y, x) & (length(intersect(Z[[i]], x)) != 0)) {
-            P.new <- P
-            P.new$domain <- i
-            xcapz <- intersect(Z[[i]], x)
-            D.remove.xcapz <- lapply(1:d, function(x) induced.subgraph(D[[x]], v.s[[x]][!(v.s[[x]] %in% xcapz)]))
-            nxt <- trmz(y, setdiff(x, Z[[i]]), P, xcapz, i, W.new, D.remove.xcapz, Z, topo, list())
-            if (nxt$tree$call$id) {
-              ind <- ind + 1
-              tree$branch[[ind]] <- nxt$tree
-              E.new <- nxt$P
-              W.new <- nxt$W
-              E.new <- activate.interventions(E.new, i, xcapz)
-              E.tr[[ind]] <- E.new
+      if (prioritize) {
+        tree$call$czero <- cc
+        tree$call$id <- FALSE
+        tree$root <- P
+        return(list(P = P, W = w.index, tree = tree))
+      } else {
+
+        # line 10
+        E.tr <- list()
+        if (length(J) == 0) {
+          tree$call$line <- 10
+          ind <- 0
+          W.new <- w.index + 1
+          for (i in 1:length(D)) {
+            A <- unobserved.graph(D[[i]])
+            A <- subgraph.edges(A, E(A)[!to(x)], delete.vertices = FALSE)
+            A <- as.matrix(get.adjacency(A))
+            if (wrap.dSep(A, s[[i]], y, x) & (length(intersect(Z[[i]], x)) != 0)) {
+              P.new <- P
+              P.new$domain <- i
+              xcapz <- intersect(Z[[i]], x)
+              D.remove.xcapz <- lapply(1:d, function(x) induced.subgraph(D[[x]], v.s[[x]][!(v.s[[x]] %in% xcapz)]))
+              nxt <- trmz_ex(y, setdiff(x, Z[[i]]), P, xcapz, i, W.new, D.remove.xcapz, Z, topo, list(), prioritize)
+              if (nxt$tree$call$id) {
+                ind <- ind + 1
+                tree$branch[[ind]] <- nxt$tree
+                E.new <- nxt$P
+                W.new <- nxt$W
+                E.new <- activate.interventions(E.new, i, xcapz)
+                E.tr[[ind]] <- E.new
+              }
             }
+          }
+
+          # line 11
+          if (length(E.tr) > 1) {
+            P.new <- probability(sum = TRUE, children = E.tr, weight = w.index)
+            tree$root <- P.new
+            tree$call$id <- TRUE
+            return(list(P = P.new, W = W.new, tree = tree))
+          }
+          if (length(E.tr) == 1) {
+            tree$root <- E.tr[[1]]
+            tree$call$id <- TRUE
+            return(list(P = E.tr[[1]], W = W.new, tree = tree))
           }
         }
 
-        # line 11
-        if (length(E.tr) > 1) {
-          P.new <- probability(sum = TRUE, children = E.tr, weight = w.index)
-          tree$root <- P.new
-          tree$call$id <- TRUE
-          return(list(P = P.new, W = W.new, tree = tree))
-        }
-
-        if (length(E.tr) == 1) {
-          tree$root <- E.tr[[1]]
-          tree$call$id <- TRUE
-          return(list(P = E.tr[[1]], W = W.new, tree = tree))
-        }
-
+        tree$call$czero <- cc
+        tree$call$id <- FALSE
+        tree$root <- P
+        return(list(P = P, W = w.index, tree = tree))
       }
-
-      tree$call$czero <- cc
-      tree$call$id <- FALSE
-      tree$root <- P
-      return(list(P = P, W = w.index, tree = tree))
     }
   }
 }
