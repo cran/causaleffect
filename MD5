@@ -1,6 +1,6 @@
-4c506860b80bf8d36cfb30649682a305 *DESCRIPTION
+f0ce417733eb3d37a1d54b5c2e66ad63 *DESCRIPTION
 92edee6c415cabda128b06e21a350f76 *NAMESPACE
-ed4c436d1ad4cb49506cf6a578ce86f1 *NEWS
+3674386fafecbeff1fa881e69288737e *NEWS
 665b25f8fb8ade9a488a3f72f494f67a *R/activate.interventions.R
 240dc4694f2a6383b84c46b4e3752260 *R/activate.selection.variable.R
 b5f637d0019d35b1ada42fd5687c44d1 *R/ancestors.R
@@ -26,7 +26,7 @@ f79aee7de6fb9740f7eaa67c5f0fc91f *R/dSep.R
 6d0906964295491ef33b5ed110cbe9cf *R/get.expression.R
 0c86a403be0836b2a335d846e29fe88c *R/get.expression.internal.R
 1a418bf868eb6a24d19c2492da3db479 *R/id.R
-9614d1414b12cda29d1d857294f37caf *R/idc.R
+b2bb98ba72070fe17ce2ce709e47b986 *R/idc.R
 124af313e0722adb39930cf4ed31405c *R/identify.R
 5a19870d8da3f144c08414a158a33264 *R/independence.restrictions.R
 be9a0929a9e756508e739dc495c220a4 *R/insert.R
@@ -67,12 +67,12 @@ aa7f73208c972631e07c07e6b7960e7a *R/verma.constraints.R
 25c9d1823dc346cecbd6751de13d14e5 *R/wrap.dSep.R
 9ea83fd6b5b62fc662300b32bf9edccc *R/zero.children.R
 90e5fad42eb060ff4aeedc6b00e25f3e *R/zzaux.effect.R
-a2a7907c8c215634ef748bac5543092d *build/vignette.rds
+c8ead1b6e99fc08fd89f4e536c039568 *build/vignette.rds
 08a1f2b09253c380fc064491fc199024 *inst/CITATION
-a9339e32b829371b4b3b221de738b228 *inst/doc/causaleffect.ltx
-b19d3afc4d933580785609f81c911326 *inst/doc/causaleffect.pdf
+70652286b7a45422fa09efccb8cf1ffa *inst/doc/causaleffect.ltx
+a3cf9b8d820a961c4874ba88fcd4a5ad *inst/doc/causaleffect.pdf
 098e1dacf360b55b8a8562fc3002cc3d *inst/doc/simplification.ltx
-1327a6cec3cf791929438e3097fc78c8 *inst/doc/simplification.pdf
+75dcf2f7458f8e6a307bf97995b45c3d *inst/doc/simplification.pdf
 144ad368f3101f04d8512bf0eaadafe5 *man/causal.effect.Rd
 564938d785eb87c42c888a07ac54171f *man/causaleffect-package.Rd
 9d7ebf77f4150d8a22b15eef103cc8f5 *man/generalize.Rd
@@ -155,7 +155,7 @@ d6880fbb7087614aeeb4bea618e4dcdc *vignettes/Figures/wage2.graphml
 7960c66829c88dd97f0031fe57a2fad7 *vignettes/Figures/wage2.pdf
 40cb794621012d4cfa0b849ba047fb5b *vignettes/Figures/wagetest.graphml
 115cad06aee68ecc88c8a1a74219d895 *vignettes/causaleffect.bib
-a9339e32b829371b4b3b221de738b228 *vignettes/causaleffect.ltx
+70652286b7a45422fa09efccb8cf1ffa *vignettes/causaleffect.ltx
 ff4ce4967affd1bf155642867d9bd415 *vignettes/giden.pdf
 51d6c56a28141d50e3a7fa16b55b382a *vignettes/ginsert.pdf
 335b9e7a22ce869f55bdf6f73eb82417 *vignettes/gsimpset.pdf
