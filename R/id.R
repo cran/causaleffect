@@ -1,6 +1,6 @@
 id <- function(y, x, P, G, G.obs, v, topo, tree) {
-  to <- NULL
-  from <- NULL
+  .to <- NULL
+  .from <- NULL
   description <- NULL
   if (length(P$var) == 0 & !(P$product | P$fraction)) tree$call <- list(y = y, x = x, P = probability(var = v), G = G, line = "", v = v, id = FALSE)
   else tree$call <- list(y = y, x = x, P = P, G = G, line = "", v = v, id = FALSE)
@@ -9,7 +9,6 @@ id <- function(y, x, P, G, G.obs, v, topo, tree) {
   if (length(x) == 0) {
     if (P$product | P$fraction) {
       P$sumset <- union(setdiff(v, y), P$sumset) %ts% topo
-      # P <- simplify.expression(P, NULL)
     } else {
       P$var <- y
     }
@@ -40,7 +39,7 @@ id <- function(y, x, P, G, G.obs, v, topo, tree) {
   }
 
   # line 3
-  G.xbar <- igraph::subgraph.edges(G, igraph::E(G)[!(to(x) | (from(x) & (description == "U" & !is.na(description))))], delete.vertices = FALSE)
+  G.xbar <- igraph::subgraph.edges(G, igraph::E(G)[!(.to(x) | (.from(x) & (description == "U" & !is.na(description))))], delete.vertices = FALSE)
   an.xbar <- ancestors(y, observed.graph(G.xbar), topo)
   w <- setdiff(setdiff(v, x), an.xbar)
   w.len <- length(w)
